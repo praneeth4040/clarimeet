@@ -1,27 +1,19 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import subprocess
+from fastapi import FastAPI
+from components.audioInput import record_audio
+from components.speech_to_text import speech_to_text
 import os
 
 app = FastAPI()
 
-class RecordRequest(BaseModel):
-    duration: int
+@app.get("/record_audio")
+def record_audio_endpoint(duration: int):
+    output_file = "output.wav"
+    record_audio(duration, output_file)
+    return {"message": "Recording finished", "file_path": os.path.abspath(output_file)}
 
-@app.post("/record")
-async def record_audio(request: RecordRequest):
-    try:
-        subprocess.run(["python", "components/audioInput.py", str(request.duration)], check=True)
-        
-        subprocess.run(["python", "components/speech-to-text.py"], check=True)
 
-        with open("output.txt", "r") as file:
-            text = file.read()
-
-        return {"text": text}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.get("/Ai_transcript")
+def transcript_audio_endpoint():
+    output_file = "output.wav"
+    transcripted_text = speech_to_text(output_file)
+    return {"message": "it has successfully done the transcript", "transcripted_text":transcripted_text}
