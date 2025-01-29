@@ -21,7 +21,7 @@ const Notepad = () => {
   };
 
   return (
-    <div>
+    <div style={{ color: 'white' }}>
       <h3>Meeting Notepad</h3>
       <textarea
         value={notes}
@@ -29,12 +29,25 @@ const Notepad = () => {
         rows="10"
         cols="50"
         placeholder="Write down important points here..."
+        style={{
+            color: 'white',
+            backgroundColor: 'transparent', // Make background transparent for the textarea
+            border: 'white', // Optional: Remove border to blend with the background
+          }}// white text and dark background
       />
       <br />
-      <button className="btn btn-success mt-2" onClick={handleSave}>
+      <button
+        className="btn btn-success mt-2"
+        onClick={handleSave}
+        style={{ color: 'white' }} // button text color to white
+      >
         Save Notes
       </button>
-      <button className="btn btn-danger mt-2 ms-2" onClick={handleClear}>
+      <button
+        className="btn btn-danger mt-2 ms-2"
+        onClick={handleClear}
+        style={{ color: 'white' }} // button text color to white
+      >
         Clear Notes
       </button>
 
