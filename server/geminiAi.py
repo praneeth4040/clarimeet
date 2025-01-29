@@ -1,4 +1,3 @@
-import os
 import google.generativeai as genai
 
 GEMINI_API_KEY = "AIzaSyC019wmY3v9dZJmIl9BJtm5Vq_t2-bGc2w"
@@ -83,14 +82,11 @@ chat_session = model.start_chat(
     ]
 )
 
-# Function to send message and get response
 def get_ai_response(message):
     response = chat_session.send_message(message)
     return response.text
 
-# Example call to the function
 def process_message():
-    result = get_ai_response("hello my friend")
+    result = get_ai_response()
     return result
 
-# Now you can call the function `process_message()` to get the result.
