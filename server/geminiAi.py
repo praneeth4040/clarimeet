@@ -60,12 +60,7 @@ def send_ai_res(question , transcript):
         complete_response_json = json.loads(complete_response_after_removing)
         print("it the final thing we are sending to frontend",complete_response_json)
         global_summary = complete_response_json["summary"]
+        print(global_summary)
         return complete_response_json
     except json.JSONDecodeError as e:
         print("Error parsing JSON:", e)
-
-if __name__ == "__main__":
-    question = "What did the team do?"
-    transcript = "Today, the team worked overnight for the hackathon. We completed the backend."
-    result = send_ai_res(question, transcript)
-    print(result)
