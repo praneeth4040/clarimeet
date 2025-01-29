@@ -10,13 +10,9 @@ def record_audio(duration, output_file):
 
     p = pyaudio.PyAudio()
 
-    stream = p.open(format=format,
-                    channels=channels,
-                    rate=rate,
-                    input=True,
-                    frames_per_buffer=chunk)
+    stream = p.open(format=format,channels=channels,rate=rate,input=True,frames_per_buffer=chunk)
 
-    print("Recording...")
+    print("Recording started")
 
     frames = []
 
