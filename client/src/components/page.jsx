@@ -143,6 +143,8 @@ const Page = () => {
     setShowMeet(true);
     setShowNotepad(false);
     setShowChatbot(false);
+tepad(false); // Hide Notepad when showing Meet
+
   };
 
   const handleVideoClick = () => {
@@ -169,6 +171,7 @@ const Page = () => {
 
   return (
     <div className="container-fluid" style={{ height: '100vh', position: 'relative' }}>
+
       {/* Background Image */}
       <div
         style={{
@@ -223,6 +226,7 @@ const Page = () => {
 
       {/* Main Content - Moved up */}
       <div className="row justify-content-center align-items-start" style={{ height: 'calc(100vh - 56px)', paddingTop: '100px' }}>
+
         <div className="col-md-4" style={{ zIndex: 1, position: 'relative' }}>
           <div
             className="d-flex mb-3 justify-content-center"
@@ -254,3 +258,6 @@ const Page = () => {
 };
 
 export default Page;
+
+
+
