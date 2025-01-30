@@ -230,6 +230,9 @@ const Summarizer = ({ summaryFromAPI }) => {
           fontWeight: "300",
         }}
       />
+      <form>
+        <button onAuxClick={handleSummarize}>hello</button>
+      </form>
       
       {summary && !loading && (
         <div style={{ 
