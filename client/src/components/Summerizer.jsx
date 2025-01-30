@@ -185,9 +185,9 @@ const Summarizer = ({ summaryFromAPI }) => {
     setSummary(words.slice(0, 15).join(" ") + (words.length > 15 ? "..." : ""));  // Generate a simple summary
 
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/send_res?question=${null}&transcript=${text}`);
+      const res = await axios.get(`http://127.0.0.1:8000/send_summary`);
       if (res.data) {
-        setSummary(res.data.summary);  // Update summary from API response
+        setSummary(res.data);  // Update summary from API response
       }
     } catch (error) {
       console.error("Error fetching summary:", error);

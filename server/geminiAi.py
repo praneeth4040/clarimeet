@@ -64,3 +64,6 @@ def send_ai_res(question , transcript):
         return complete_response_json
     except json.JSONDecodeError as e:
         print("Error parsing JSON:", e)
+
+def send_summary_real():
+    return global_summary

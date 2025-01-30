@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from components.audioInput import record_audio
 from components.speech_to_text import speech_to_text
-from geminiAi import send_ai_res
+from geminiAi import send_ai_res , send_summary_real
 from components.geminiApiForurl import get_summary
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -38,4 +38,10 @@ def send_generated_res(question: str,transcript:str):
 @app.get("/url_summary")
 def send_summary(url:str):
     response = get_summary(url)
+    return response
+
+@app.get("/send_summary")
+def send_summarizer():
+    response = send_summary_real()
+    print(response)
     return response
