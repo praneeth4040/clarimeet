@@ -43,5 +43,5 @@ def send_summary(url:str):
 @app.get("/send_summary")
 def send_summarizer():
     response = send_summary_real()
-    print(response)
+    print("response before sending",response)
     return response

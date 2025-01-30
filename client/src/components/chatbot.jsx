@@ -1,16 +1,40 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Chatbot = ({ onClose }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(''); // Holds the current message in the input field
+  const [messages, setMessages] = useState([]); // Holds the list of all messages
+  const [transcript, setTranscripted] = useState('');
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
   };
 
-  const handleSendMessage = () => {
+  const handleArrowButtonClick = async () => {
     if (message.trim() !== '') {
-      console.log('Message sent:', message); // Placeholder action
-      setMessage('');
+      // Add the message to the messages array when the arrow button is clicked
+      setMessages([...messages, { text: message, sender: 'user' }]);
+      setMessage(''); // Clear the input after sending
+
+      try {
+        // API call to get the chatbot response
+        const response = await axios.get(`http://127.0.0.1:8000/send_res?question=${message}&transcript=${transcript}`);
+        console.log(response.data);
+
+        const botResponse = response.data.ai_response; // Extracting the ai_response property
+
+        // Add the bot response to the messages array
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: botResponse, sender: 'bot' },
+        ]);
+      } catch (error) {
+        console.error("Error fetching bot response:", error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: "Error fetching bot response", sender: 'bot' },
+        ]);
+      }
     }
   };
 
@@ -28,68 +52,98 @@ const Chatbot = ({ onClose }) => {
         height: '500px',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start', // Keep the content starting from the top
-        alignItems: 'center', // Center horizontally
+        justifyContent: 'flex-start',
+        alignItems: 'center',
         fontSize: '20px',
         fontWeight: 'bold',
         zIndex: '1000',
-        overflowY: 'scroll', // Add scroll feature
+        overflowY: 'scroll',
       }}
     >
-      {/* Title at the top */}
-      <div style={{ fontSize: '28px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
-        Clarimeet Chatbot {/* Title */}
+      {/* Title and Back Button */}
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Back Button */}
+        <button
+          onClick={onClose}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            border: 'none',
+            backgroundColor: '#007bff',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/545/545682.png" // Upward arrow icon (same as the back button)
+            alt="Back"
+            style={{ width: '24px', height: '24px' }}
+          />
+        </button>
+
+        {/* Chatbot Title */}
+        <div style={{ fontSize: '28px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+          Clarimeet Chatbot
+        </div>
       </div>
 
-      {/* Avatar and Welcome Message below the title */}
+      {/* Chatbot Avatar */}
       <div style={{ textAlign: 'center' }}>
         <div
           style={{
-            width: '50px', // Adjusted size
-            height: '50px', // Adjusted size
+            width: '50px', // Avatar size
+            height: '50px', // Avatar size
             borderRadius: '50%',
             overflow: 'hidden',
             margin: '0 auto', // Center the avatar
           }}
         >
           <img
-            src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+            src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" // Chatbot avatar
             alt="Chatbot Avatar"
             style={{ width: '100%', height: '100%' }}
           />
         </div>
-
-        <div style={{ marginTop: '10px', fontSize: '18px', textAlign: 'center' }}>
-          Hey! How can I help you?
-        </div>
       </div>
 
-      {/* Floating Icon */}
-      <button
-        onClick={onClose}
+      {/* Messages Display */}
+      <div
         style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          border: 'none',
-          backgroundColor: '#007bff',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          cursor: 'pointer',
+          flex: 1,
+          width: '100%',
+          overflowY: 'auto',
+          paddingBottom: '50px', // Add space at the bottom to avoid the text being hidden
         }}
       >
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/545/545682.png" // Upward arrow icon
-          alt="Up"
-          style={{ width: '24px', height: '24px' }}
-        />
-      </button>
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              textAlign: msg.sender === 'user' ? 'right' : 'left',
+              padding: '5px',
+              margin: '5px 0',
+            }}
+          >
+            <span
+              style={{
+                backgroundColor: msg.sender === 'user' ? '#007bff' : '#ccc',
+                color: msg.sender === 'user' ? '#fff' : '#000',
+                padding: '8px 12px',
+                borderRadius: '20px',
+                fontSize: '16px',
+                fontWeight: 'normal',
+              }}
+            >
+              {msg.text}
+            </span>
+          </div>
+        ))}
+      </div>
 
-      {/* Placeholder Input at the bottom */}
+      {/* Input Field and Arrow Button */}
       <div
         style={{
           width: '100%',
@@ -119,7 +173,7 @@ const Chatbot = ({ onClose }) => {
 
         {/* Circular Send Button with Image */}
         <button
-          onClick={handleSendMessage}
+          onClick={handleArrowButtonClick} // Trigger sending the message
           style={{
             marginLeft: '10px',
             width: '40px',
@@ -134,8 +188,8 @@ const Chatbot = ({ onClose }) => {
           }}
         >
           <img
-            src="https://cdn-icons-png.flaticon.com/512/892/892692.png"
-            alt="Send"
+            src="https://cdn-icons-png.flaticon.com/512/545/545682.png" // Upward arrow icon
+            alt="Up"
             style={{ width: '24px', height: '24px' }}
           />
         </button>

@@ -7,6 +7,8 @@ const Meet = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
   const [transcriptedText, setTranscriptedText] = useState(null);
+  const [summary, setSummary] = useState(""); // Stores the summary
+  const [loading, setLoading] = useState(false); // Loading state for API call
 
   useEffect(() => {
     if (navigator.mediaDevices) {
@@ -56,6 +58,7 @@ const Meet = () => {
                 try {
                   const summarizedResponse = await axios.get(`http://127.0.0.1:8000/send_res?question=${null}&transcript=${transcripted_text}`);
                   console.log(summarizedResponse.data);
+                  setSummary(summarizedResponse.data.summary); // Ensure you're setting the correct property
                 } catch (err) {
                   console.error("Error fetching summary: ", err);
                 }
@@ -76,6 +79,20 @@ const Meet = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
       setIsRecording(false);
+    }
+  };
+
+  const handleSummarize = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/send_summary');
+      if (response.data) {
+        setSummary(response.data.summary); // Ensure you're setting the correct property
+      }
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,23 +120,61 @@ const Meet = () => {
         </button>
       </div>
 
-      {/* Uncomment to display recorded audio */}
-      {/* {audioUrl && (
-        <div className="mt-3">
-          <h5>Recorded Audio:</h5>
-          <audio controls>
-            <source src={audioUrl} type="audio/wav" />
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      )} */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          backgroundColor: "rgba(255, 255, 255, 0.1)", 
+          padding: "12px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)", 
+          width: "90%",
+          maxWidth: "400px",
+          textAlign: "center",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.3)"
+        }}
+      >
+        <h3 style={{ color: "#fff", fontSize: "1rem" }}>Summarizer</h3>
+
+        <textarea 
+          value={summary} 
+          readOnly 
+          style={{ 
+            width: "100%", 
+            height: "70px",
+            padding: "8px",
+            borderRadius: "5px",
+            border: "none",
+            backgroundColor: "white",
+            color: "black",
+            outline: "none",
+            resize: "none",
+            fontSize: "0.9rem",
+            fontWeight: "300",
+          }}
+        />
+
+        <button 
+          onClick={handleSummarize} 
+          disabled={loading} 
+          style={{ 
+            marginTop: "8px",
+            padding: "8px 15px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontSize: "0.9rem"
+          }}>
+          {loading ? "Loading..." : "Summarize"}
+        </button>
+      </div>
     </div>
   );
 };
 
 export default Meet;
-
-
-
-
-  
