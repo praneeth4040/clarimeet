@@ -1,79 +1,86 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 
-const Summarizer = () => {
-  const [text, setText] = useState("");
-  const [summary, setSummary] = useState("");
+const Summarizer = ({ }) => {
+  const [text, setText] = useState("");  // Holds user input
+  const [summary, setSummary] = useState("");  // Stores summary
+  const [loading, setLoading] = useState(false); // Loading state for API call
 
-  const handleSummarize = () => {
-    if (text.trim() === "") return;
-    const words = text.split(" ");
-    setSummary(words.slice(0, 15).join(" ") + (words.length > 15 ? "..." : ""));
+
+  const handleSummarize = async () => {
+    if (text.trim() === "") return; // Prevent empty requests
+
+    setLoading(true); 
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/send_summary"); // ✅ Fixed URL
+      console.log("API Response:", res.data); 
+
+      if (res.data) {
+        setSummary(res.data);  // ✅ Updates summary state
+      }
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div style={{ 
       position: "fixed",
-      bottom: "20px", // Position it at the bottom of the page
+      bottom: "20px",
       left: "50%",
-      transform: "translateX(-50%)", // Center the summarizer horizontally
+      transform: "translateX(-50%)",
       backgroundColor: "rgba(255, 255, 255, 0.1)", 
-      padding: "12px", 
-      borderRadius: "8px", 
+      padding: "12px",
+      borderRadius: "8px",
       boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)", 
-      width: "90%", 
-      maxWidth: "400px", // Reduced width
+      width: "90%",
+      maxWidth: "400px",
       textAlign: "center",
       backdropFilter: "blur(10px)",
       border: "1px solid rgba(255, 255, 255, 0.3)"
     }}>
       <h3 style={{ color: "#fff", fontSize: "1rem" }}>Summarizer</h3>
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Enter text here..."
+
+      {/* ✅ This textarea will update when API response comes */}
+      <textarea 
+        value={summary} 
+        readOnly 
         style={{ 
           width: "100%", 
-          height: "70px", // Reduced height
-          padding: "8px", 
-          borderRadius: "5px", 
-          border: "none", 
-          backgroundColor: "rgba(255, 255, 255, 0.1)", 
-          color: "#fff",
+          height: "70px",
+          padding: "8px",
+          borderRadius: "5px",
+          border: "none",
+          backgroundColor: "white",
+          color: "black",
           outline: "none",
           resize: "none",
           fontSize: "0.9rem",
           fontWeight: "300",
         }}
       />
+
+      {/* ✅ "Summarize" Button */}
       <button 
         onClick={handleSummarize} 
+        disabled={loading} // Prevents multiple clicks while loading
         style={{ 
-          marginTop: "8px", 
-          padding: "8px 15px", 
-          backgroundColor: "#007bff", 
-          color: "white", 
-          border: "none", 
-          borderRadius: "5px", 
+          marginTop: "8px",
+          padding: "8px 15px",
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
           cursor: "pointer",
           fontSize: "0.9rem"
         }}>
-        Summarize
+        {loading ? "Loading..." : "Summarize"}
       </button>
-      {summary && (
-        <div style={{ 
-          marginTop: "8px", 
-          padding: "8px", 
-          backgroundColor: "rgba(255, 255, 255, 0.1)", 
-          borderRadius: "5px", 
-          fontSize: "0.9rem",
-          color: "#fff"
-        }}>
-          <strong>Summary:</strong> {summary}
-        </div>
-      )}
+
     </div>
   );
 };
 
 export default Summarizer;
-
